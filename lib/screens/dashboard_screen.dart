@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/player_service.dart';
 import '../widgets/evolucao_top3_chart.dart';
+import '../widgets/gols_assistencias_chart.dart'; 
 import '../models/player.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -67,7 +68,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        title: const Text("Dashboard"),
+        title: const Text("Brasileirão Statistics"),
         actions: [
           if (clube != null)
             Container(
@@ -280,7 +281,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               )
                             else
                               ...topClube.asMap().entries.map((entry) {
-                                final index = entry.key;
                                 final player = entry.value;
                                 return ListTile(
                                   leading: CircleAvatar(
@@ -307,6 +307,52 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                       ),
                     ),
+
+                  const SizedBox(height: 20),
+
+                  // Gráfico de Gols vs Assistências (NOVO)
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Row(
+                            children: [
+                              Icon(Icons.sports_soccer, color: Colors.red),
+                              SizedBox(width: 8),
+                              Text(
+                                "Gols vs Assistências",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            "Comparação entre os principais jogadores",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          const GolsAssistenciasChart(limiteTop: 10),
+                          const SizedBox(height: 8),
+                          const Text(
+                            "Gols (vermelho) vs Assistências (azul) dos top 10 jogadores",
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
 
                   const SizedBox(height: 20),
 
@@ -347,6 +393,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                   ),
+
+                  const SizedBox(height: 30),
+                  
                 ],
               ),
             ),
@@ -377,7 +426,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       onTap: (index) {
         switch (index) {
           case 0:
-            break; // Já está no dashboard
+            break; 
           case 1:
             Navigator.pushNamed(context, '/players');
             break;

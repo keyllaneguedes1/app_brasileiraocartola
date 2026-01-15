@@ -151,20 +151,7 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Expanded(
-                        child: TextField(
-                          decoration: const InputDecoration(
-                            labelText: "Clube (opcional)",
-                            border: OutlineInputBorder(),
-                          ),
-                          onSubmitted: (v) {
-                            setState(() {
-                              clube = v.isEmpty ? null : v;
-                            });
-                            _carregar();
-                          },
-                        ),
-                      ),
+                      
                     ],
                   ),
                 ],
@@ -249,7 +236,7 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
                                 j.apelido,
                                 style: const TextStyle(fontWeight: FontWeight.w500),
                               ),
-                              subtitle: Text("${j.clube ?? "-"} • ${j.posicao}"),
+                              subtitle: Text("${j.posicao}"),
                               trailing: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.end,

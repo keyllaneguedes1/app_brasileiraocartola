@@ -69,11 +69,18 @@ class _RankingScreenState extends State<RankingScreen> {
         title: const Text("Rankings"),
         actions: [
           IconButton(
-            icon: const Icon(Icons.calendar_today),
+            icon: const Icon(Icons.emoji_events),
             onPressed: () {
               Navigator.pushNamed(context, '/ranking-temporada');
             },
             tooltip: "Ranking da Temporada",
+          ),
+          IconButton(
+            icon: const Icon(Icons.bar_chart),
+            onPressed: () {
+              Navigator.pushNamed(context, '/scouts');
+            },
+            tooltip: "Rankings de Scouts",
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -154,21 +161,7 @@ class _RankingScreenState extends State<RankingScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    decoration: const InputDecoration(
-                      labelText: "Clube (opcional)",
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.sports_soccer),
-                      hintText: "Ex: FLA, PAL, SAO...",
-                    ),
-                    onSubmitted: (v) {
-                      setState(() {
-                        clube = v.isEmpty ? null : v;
-                      });
-                      _carregar();
-                    },
-                  ),
+                  
                 ],
               ),
             ),

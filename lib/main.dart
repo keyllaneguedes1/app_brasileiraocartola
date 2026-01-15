@@ -5,6 +5,7 @@ import 'screens/ranking_screen.dart';
 import 'screens/comparison_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/ranking_temporada_screen.dart';
+import 'screens/scouts_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -106,6 +107,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/dashboard': (_) => const DashboardScreen(),
         '/players': (_) => const PlayersListScreen(),
+        '/scouts': (context) => const ScoutsScreen(),
         '/rankings': (_) => const RankingScreen(),
         '/ranking-temporada': (_) => const RankingTemporadaScreen(),
         '/comparison': (_) => const ComparisonScreen(),

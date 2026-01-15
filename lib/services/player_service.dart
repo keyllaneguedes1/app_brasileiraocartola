@@ -533,4 +533,64 @@ class PlayerService {
       return [];
     }
   }
+  
+  Future<List<Map<String, dynamic>>> getTopScout({
+    required String type,
+    int? rodada,
+    int limite = 10,
+    String? posicao,
+    String? clube,
+  }) async {
+    try {
+      final Map<String, String> queryParams = {
+        'limite': limite.toString(),
+      };
+      
+      if (rodada != null) queryParams['rodada'] = rodada.toString();
+      if (posicao != null && posicao.isNotEmpty) queryParams['posicao'] = posicao;
+      if (clube != null && clube.isNotEmpty) queryParams['clube'] = clube;
+      
+      final uri = Uri.parse('$baseUrl/scouts/${_getScoutEndpoint(type)}')
+          .replace(queryParameters: queryParams);
+      
+      final response = await http.get(uri);
+      
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return List<Map<String, dynamic>>.from(data);
+      } else {
+        throw Exception('Falha ao carregar scout $type: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro em getTopScout: $e');
+      rethrow;
+    }
+  }
+  
+  String _getScoutEndpoint(String type) {
+    switch (type) {
+      case 'assistencias':
+        return 'ataque/top-assistencias';
+      case 'gols':
+        return 'ataque/top-gols';
+      case 'desarmes':
+        return 'defesa/top-desarmes';
+      case 'finalizacoes-perigosas':
+        return 'ataque/top-finalizacoes-perigosas';
+      case 'faltas-sofridas':
+        return 'ataque/top-faltas-sofridas';
+      case 'faltas-cometidas':
+        return 'defesa/top-faltas-cometidas';
+      case 'defesas-dificeis':
+        return 'goleiros/top-defesas-dificeis';
+      case 'penaltis-defendidos':
+        return 'goleiros/top-penaltis-defendidos';
+      case 'jogos-sem-gol':
+        return 'defesa/top-jogos-sem-gol';
+      default:
+        throw Exception('Tipo de scout não suportado: $type');
+    }
+  }
+  
+  
 }

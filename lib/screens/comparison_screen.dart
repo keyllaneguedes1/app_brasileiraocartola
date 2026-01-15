@@ -37,17 +37,12 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
 
     setState(() => isLoading = true);
     try {
-      // Busca comparação básica
       final data = await service.getComparison(id1, id2);
-      
-      // Busca detalhes completos de cada jogador para obter o clube
       final player1Det = await service.getPlayerDetails(id1);
       final player2Det = await service.getPlayerDetails(id2);
-      
-      // Busca scouts detalhados
       final scouts1Data = await service.getPlayerScoutsDetalhado(id1);
       final scouts2Data = await service.getPlayerScoutsDetalhado(id2);
-      
+
       setState(() {
         comp = data;
         player1Details = player1Det;
@@ -240,8 +235,6 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
                                 Colors.red,
                               ),
                               const SizedBox(height: 16),
-                            
-                              const SizedBox(height: 16),
                               if (scout1 != null && scout2 != null)
                                 _buildScoutComparison(),
                             ],
@@ -259,14 +252,12 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: color,
-          ),
-        ),
+        Text(label,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: color,
+            )),
         const SizedBox(height: 6),
         Container(
           decoration: BoxDecoration(
@@ -280,10 +271,7 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
               border: InputBorder.none,
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-              prefixIcon: Icon(
-                Icons.person,
-                color: color,
-              ),
+              prefixIcon: Icon(Icons.person, color: color),
             ),
             style: const TextStyle(fontSize: 16),
             keyboardType: TextInputType.number,
@@ -293,7 +281,112 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
     );
   }
 
-  Widget _buildComparisonCard(Player player, Player playerDetails, String title, Color color) {
+    Widget _buildScoutComparisonChart(String label, int value1, int value2) {
+    final maxValue = [value1, value2].reduce((a, b) => a > b ? a : b);
+    final percent1 = maxValue > 0 ? value1 / maxValue : 0.0;
+    final percent2 = maxValue > 0 ? value2 / maxValue : 0.0;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
+            Text("$value1 vs $value2",
+                style: const TextStyle(fontSize: 12, color: Colors.grey)),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                height: 28,
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.1),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(6),
+                    bottomLeft: Radius.circular(6),
+                  ),
+                ),
+                child: FractionallySizedBox(
+                  widthFactor: percent1,
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(6),
+                        bottomLeft: Radius.circular(6),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        value1.toString(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              width: 40,
+              alignment: Alignment.center,
+              child: Text("VS",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade600,
+                      fontSize: 10)),
+            ),
+            Expanded(
+              child: Container(
+                height: 28,
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.1),
+                  borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(6),
+                    bottomRight: Radius.circular(6),
+                  ),
+                ),
+                child: FractionallySizedBox(
+                  widthFactor: percent2,
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: const BorderRadius.only(
+                        topRight: Radius.circular(6),
+                        bottomRight: Radius.circular(6),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        value2.toString(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildComparisonCard(
+      Player player, Player playerDetails, String title, Color color) {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -302,76 +395,59 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.person, color: color, size: 24),
+                ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: color.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        Icons.person,
-                        color: color,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: TextStyle(
+                    Text(title,
+                        style: TextStyle(
                             fontSize: 12,
                             color: color,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.bold)),
+                    Text(player.apelido,
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold)),
+                    if (playerDetails.clube != null &&
+                        playerDetails.clube!.isNotEmpty)
+                                              Text(
+                          playerDetails.clube!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
                           ),
                         ),
-                        Text(
-                          player.apelido,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        if (playerDetails.clube != null && playerDetails.clube!.isNotEmpty)
-                          Text(
-                            playerDetails.clube!,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: _getPositionColor(player.posicao),
-                    borderRadius: BorderRadius.circular(20),
+                    ],
                   ),
-                  child: Text(
-                    player.posicao,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
               ],
             ),
-            
-          
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: _getPositionColor(player.posicao),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                player.posicao,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -380,7 +456,7 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
 
   Widget _buildScoutComparison() {
     if (scout1 == null || scout2 == null) return const SizedBox();
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -401,8 +477,8 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            
-            // Gráfico de barras comparativo
+
+            // Gráficos principais
             _buildScoutComparisonChart("Gols", scout1!.gols, scout2!.gols),
             const SizedBox(height: 12),
             _buildScoutComparisonChart("Assistências", scout1!.assistencias, scout2!.assistencias),
@@ -410,11 +486,10 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
             _buildScoutComparisonChart("Desarmes", scout1!.desarmes, scout2!.desarmes),
             const SizedBox(height: 12),
             _buildScoutComparisonChart("Finalizações", scout1!.finalizacoesTotais, scout2!.finalizacoesTotais),
-            
-            // Estatísticas extras
+
             const SizedBox(height: 20),
             const Text(
-              "Outras Estatísticas",
+              "Outras Estatísticas (Gráfico de Faltas)",
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -422,24 +497,32 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              childAspectRatio: 2,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
+
+            // Dois gráficos lado a lado
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildScoutComparisonItem("Faltas Cometidas", scout1!.faltasCometidas, scout2!.faltasCometidas),
-                _buildScoutComparisonItem("Faltas Sofridas", scout1!.faltasSofridas, scout2!.faltasSofridas),
-                if (scout1!.posicao == "GOL" || scout2!.posicao == "GOL")
-                  _buildScoutComparisonItem("Defesas Difíceis", scout1!.defesasDificeis, scout2!.defesasDificeis),
-                if (scout1!.posicao == "GOL" || scout2!.posicao == "GOL")
-                  _buildScoutComparisonItem("Jogos sem Gol", scout1!.jogosSemGol, scout2!.jogosSemGol),
+                Expanded(
+                  child: _buildFaltasChart(
+                    "Jogador 1",
+                    scout1!.faltasCometidas,
+                    scout1!.faltasSofridas,
+                    Colors.blue,
+                  ),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: _buildFaltasChart(
+                    "Jogador 2",
+                    scout2!.faltasCometidas,
+                    scout2!.faltasSofridas,
+                    Colors.red,
+                  ),
+                ),
               ],
             ),
-            
+
+
             // Eficiência comparativa
             const SizedBox(height: 20),
             const Text(
@@ -502,8 +585,7 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
                 ),
               ],
             ),
-            
-            // Resumo
+
             const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.all(12),
@@ -533,183 +615,56 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
     );
   }
 
-  Widget _buildScoutComparisonChart(String label, int value1, int value2) {
-    final maxValue = [value1, value2].reduce((a, b) => a > b ? a : b);
-    final percent1 = maxValue > 0 ? value1 / maxValue : 0.0;
-    final percent2 = maxValue > 0 ? value2 / maxValue : 0.0;
-    
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
-            Text(
-              "$value1 vs $value2",
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        Row(
-          children: [
-            Expanded(
-              child: Container(
-                height: 28,
-                decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(6),
-                    bottomLeft: Radius.circular(6),
-                  ),
-                ),
-                child: FractionallySizedBox(
-                  widthFactor: percent1,
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(6),
-                        bottomLeft: Radius.circular(6),
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        value1.toString(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              width: 40,
-              alignment: Alignment.center,
-              child: Text(
-                "VS",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade600,
-                  fontSize: 10,
-                ),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                height: 28,
-                decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
-                  borderRadius: const BorderRadius.only(
-                    topRight: Radius.circular(6),
-                    bottomRight: Radius.circular(6),
-                  ),
-                ),
-                child: FractionallySizedBox(
-                  widthFactor: percent2,
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: const BorderRadius.only(
-                        topRight: Radius.circular(6),
-                        bottomRight: Radius.circular(6),
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        value2.toString(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
+  /// Gráfico de barras verticais para faltas cometidas vs sofridas
+  Widget _buildFaltasChart(String title, int cometidas, int sofridas, Color color) {
+    final maxValue = [cometidas, sofridas].reduce((a, b) => a > b ? a : b);
+    final percentCometidas = maxValue > 0 ? cometidas / maxValue : 0.0;
+    final percentSofridas = maxValue > 0 ? sofridas / maxValue : 0.0;
 
-  Widget _buildScoutComparisonItem(String label, int value1, int value2) {
-    return Card(
-      elevation: 1,
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
+    return Column(
+      children: [
+        Text(title, style: TextStyle(fontWeight: FontWeight.bold, color: color)),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            // Barra Faltas Cometidas
+            Column(
               children: [
+                Text(cometidas.toString(), style: const TextStyle(color: Colors.blue)),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    value1.toString(),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
+                  width: 30,
+                  height: 100,
+                  alignment: Alignment.bottomCenter,
+                  child: FractionallySizedBox(
+                    heightFactor: percentCometidas,
+                    child: Container(color: Colors.blue),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4),
-                  child: Text(
-                    "vs",
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
+                const Text("Cometidas", style: TextStyle(fontSize: 10)),
+              ],
+            ),
+            const SizedBox(width: 16),
+            // Barra Faltas Sofridas
+            Column(
+              children: [
+                Text(sofridas.toString(), style: const TextStyle(color: Colors.red)),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade50,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    value2.toString(),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.red,
-                    ),
+                  width: 30,
+                  height: 100,
+                  alignment: Alignment.bottomCenter,
+                  child: FractionallySizedBox(
+                    heightFactor: percentSofridas,
+                    child: Container(color: Colors.red),
                   ),
                 ),
+                const Text("Sofridas", style: TextStyle(fontSize: 10)),
               ],
             ),
           ],
         ),
-      ),
+      ],
     );
   }
 

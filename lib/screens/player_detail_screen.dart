@@ -150,7 +150,7 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                "${jogador!.clube ?? "Clube não informado"} • ${jogador!.posicao}",
+                                "${jogador!.posicao}",
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey.shade600,
@@ -161,65 +161,13 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
                     
-                    // Estatísticas em linha
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildStatItem("Pontos Total", jogador!.pontosFantasy.toStringAsFixed(1)),
-                        _buildStatItem("Média", jogador!.media?.toStringAsFixed(2) ?? "-"),
-                        _buildStatItem("Rodadas", stats['total_rodadas']?.toString() ?? "0"),
-                      ],
-                    ),
+
                   ],
                 ),
               ),
             ),
 
-            const SizedBox(height: 16),
-
-            // Estatísticas Avançadas
-            const Text(
-              "Estatísticas da Temporada",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              childAspectRatio: 1.5,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-              children: [
-                _buildStatCard(
-                  "Média Últimas 5",
-                  stats['media_ultimas_5']?.toStringAsFixed(2) ?? "-",
-                  Icons.trending_up,
-                  Colors.green,
-                ),
-                _buildStatCard(
-                  "Pontuação Máxima",
-                  stats['pontuacao_maxima']?.toStringAsFixed(1) ?? "-",
-                  Icons.arrow_upward,
-                  Colors.green,
-                ),
-                _buildStatCard(
-                  "Pontuação Mínima",
-                  stats['pontuacao_minima']?.toStringAsFixed(1) ?? "-",
-                  Icons.arrow_downward,
-                  Colors.red,
-                ),
-                _buildStatCard(
-                  "Total de Rodadas",
-                  stats['total_rodadas']?.toString() ?? "0",
-                  Icons.format_list_numbered,
-                  Colors.blue,
-                ),
-              ],
-            ),
 
             // Scouts Detalhados (se disponível)
             if (scout != null) ...[
@@ -263,7 +211,7 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
                         Colors.blue,
                       ),
                       
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 6),
                       
                       // Estatísticas Específicas por Posição
                       if (scout!.posicao == "GOL") 
@@ -346,109 +294,9 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
 
             const SizedBox(height: 16),
 
-            // Histórico de Rodadas
-            const Text(
-              "Últimas Rodadas",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
             
-            if (rodadas.isEmpty)
-              const Card(
-                child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text("Nenhuma rodada registrada"),
-                ),
-              )
-            else
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: rodadas.map((rodada) {
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: _getPontosColor(rodada.pontosFantasy),
-                          child: Text(
-                            rodada.pontosFantasy.toInt().toString(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                        title: Text(
-                          "Rodada ${rodada.rodadaId}",
-                          style: const TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                        trailing: Text(
-                          "${rodada.pontosFantasy.toStringAsFixed(1)} pts",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: _getPontosColor(rodada.pontosFantasy),
-                          ),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(vertical: 4),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatItem(String label, String value) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.grey,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: color, size: 24),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
-              textAlign: TextAlign.center,
-            ),
+            
+            
           ],
         ),
       ),
@@ -540,13 +388,5 @@ class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
       default:
         return Colors.grey;
     }
-  }
-
-  Color _getPontosColor(double pontos) {
-    if (pontos >= 8.0) return Colors.green;
-    if (pontos >= 6.0) return Colors.lightGreen;
-    if (pontos >= 4.0) return Colors.yellow;
-    if (pontos >= 2.0) return Colors.orange;
-    return Colors.red;
   }
 }
