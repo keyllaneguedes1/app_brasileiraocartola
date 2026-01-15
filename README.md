@@ -25,8 +25,8 @@ O app permite:
   - `jogadores_rodadas.json`
 
 ### 2. **Backend (FastAPI)**
-- Carrega dados processados (CSV/JSON) em memória ou banco relacional simples (SQLite/Postgres).
-- Expõe endpoints REST para consulta.
+- Carrega dados processados (CSV/JSON) em memória.
+- Expõe endpoints para consulta.
 
 ### 3. **Frontend (Flutter)**
 - Consome os endpoints da API.
