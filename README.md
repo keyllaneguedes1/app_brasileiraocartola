@@ -17,7 +17,7 @@ O app permite:
 ## ⚙️ Arquitetura Geral
 
 ### 1. **Módulo de Análise (Python + Pandas)**
-- Ingestão dos dados do repositório [caRtola / fgsantosti](https://github.com/fgsantosti).
+- Ingestão dos dados do repositório [caRtola].
 - Normalização de scouts, posições, rodadas e jogadores.
 - Função de cálculo de pontuação fantasy com base nos pesos definidos.
 - Exportação em **CSV/JSON**:
