@@ -310,7 +310,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                   const SizedBox(height: 20),
 
-                  // Gráfico de Gols vs Assistências (NOVO)
+                  // Gráfico de Gols vs Assistências 
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
