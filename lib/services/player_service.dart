@@ -141,8 +141,8 @@ class PlayerService {
           apelido: e["atletas.apelido"],
           posicao: e["Posição"],
           pontosFantasy: (e["pontos_fantasy"] as num?)?.toDouble() ?? 0.0,
-          media: null, // Não vem no ranking por rodada
-          clube: null, // Não vem no ranking por rodada
+          media: null, 
+          clube: null, 
         );
       }).toList();
       
@@ -200,7 +200,7 @@ class PlayerService {
       ) as List;
       
       final scouts = data.map((e) {
-        return Scout.fromJson(e); // Usa o factory fromJson
+        return Scout.fromJson(e); 
       }).toList();
       
       _saveToCache(cacheKey, scouts);
@@ -269,7 +269,7 @@ class PlayerService {
       
       final players = data.map((e) {
         return Player(
-          id: 0, // Não vem na API
+          id: 0, 
           apelido: e["atletas.apelido"],
           posicao: e["Posição"],
           pontosFantasy: (e["pontos_fantasy"] as num?)?.toDouble() ?? 0.0,
@@ -381,7 +381,7 @@ class PlayerService {
       ) as List;
       
       return data.map((e) {
-        return Scout.fromJson(e); // Usa o factory fromJson
+        return Scout.fromJson(e); 
       }).toList();
     } catch (e) {
       print('Erro ao buscar top assistências: $e');
@@ -402,7 +402,7 @@ class PlayerService {
       ) as List;
       
       return data.map((e) {
-        return Scout.fromJson(e); // Usa o factory fromJson
+        return Scout.fromJson(e); 
       }).toList();
     } catch (e) {
       print('Erro ao buscar top desarmes: $e');
@@ -410,7 +410,7 @@ class PlayerService {
     }
   }
 
-  // 14. Outros endpoints de scouts disponíveis na API
+  // 14. Mais scouts específicos
   Future<List<Scout>> topFinalizacoesPerigosas({int? rodada, int limite = 10, String? posicao, String? clube}) async {
     try {
       final data = await _makeRequest(
