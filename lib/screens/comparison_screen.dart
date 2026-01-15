@@ -240,7 +240,7 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
                                 Colors.red,
                               ),
                               const SizedBox(height: 16),
-                              _buildComparisonStats(),
+                            
                               const SizedBox(height: 16),
                               if (scout1 != null && scout2 != null)
                                 _buildScoutComparison(),
@@ -370,100 +370,8 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildStatCard("Clube", playerDetails.clube ?? "-", Icons.sports),
-                _buildStatCard(
-                  "Pontos",
-                  player.pontosFantasy.toStringAsFixed(1),
-                  Icons.leaderboard,
-                ),
-                _buildStatCard(
-                  "Média",
-                  player.media?.toStringAsFixed(2) ?? "-",
-                  Icons.trending_up,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatCard(String label, String value, IconData icon) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.blue.shade50,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, color: const Color(0xFF1A237E), size: 20),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.grey,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildComparisonStats() {
-    if (comp == null || comp!.jogador1.isEmpty || comp!.jogador2.isEmpty) {
-      return const SizedBox();
-    }
-
-    final p1 = comp!.jogador1.first;
-    final p2 = comp!.jogador2.first;
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            const Row(
-              children: [
-                Icon(Icons.analytics, color: Color(0xFF1A237E)),
-                SizedBox(width: 8),
-                Text(
-                  "Análise Comparativa Básica",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1A237E),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _buildComparisonRow(
-              "Pontos Fantasy",
-              p1.pontosFantasy,
-              p2.pontosFantasy,
-              isHigherBetter: true,
-            ),
-            const SizedBox(height: 12),
-            _buildComparisonRow(
-              "Média",
-              p1.media ?? 0,
-              p2.media ?? 0,
-              isHigherBetter: true,
-            ),
+            
+          
           ],
         ),
       ),
@@ -802,83 +710,6 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildComparisonRow(
-    String label,
-    double value1,
-    double value2, {
-    required bool isHigherBetter,
-  }) {
-    final diff = value1 - value2;
-    final isP1Better = isHigherBetter ? diff > 0 : diff < 0;
-
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.w500),
-          ),
-        ),
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-            decoration: BoxDecoration(
-              color: isP1Better ? Colors.green.shade50 : Colors.grey.shade50,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(8),
-                bottomLeft: Radius.circular(8),
-              ),
-            ),
-            child: Center(
-              child: Text(
-                value1.toStringAsFixed(1),
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: isP1Better ? Colors.green : Colors.grey,
-                ),
-              ),
-            ),
-          ),
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Text(
-            diff >= 0 ? "+${diff.toStringAsFixed(1)}" : diff.toStringAsFixed(1),
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: diff > 0
-                  ? Colors.green
-                  : diff < 0
-                      ? Colors.red
-                      : Colors.grey,
-            ),
-          ),
-        ),
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-            decoration: BoxDecoration(
-              color: !isP1Better ? Colors.red.shade50 : Colors.grey.shade50,
-              borderRadius: const BorderRadius.only(
-                topRight: Radius.circular(8),
-                bottomRight: Radius.circular(8),
-              ),
-            ),
-            child: Center(
-              child: Text(
-                value2.toStringAsFixed(1),
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: !isP1Better ? Colors.red : Colors.grey,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 
