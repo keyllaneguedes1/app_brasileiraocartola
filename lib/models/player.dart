@@ -1,4 +1,3 @@
-// lib/models/player.dart
 class Player {
   final int id;
   final String apelido;

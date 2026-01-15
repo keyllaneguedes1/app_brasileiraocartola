@@ -1,4 +1,3 @@
-// lib/models/comparison.dart
 import 'player.dart';
 
 class Comparison {
