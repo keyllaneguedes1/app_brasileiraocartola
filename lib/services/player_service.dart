@@ -4,6 +4,7 @@ import '../models/player.dart';
 import '../models/round.dart';
 import '../models/scout.dart';
 import '../models/comparison.dart';
+import '../models/player_search.dart';
 
 class PlayerService {
   final String baseUrl = "https://app-cartola-api.onrender.com";
@@ -589,6 +590,24 @@ class PlayerService {
         return 'defesa/top-jogos-sem-gol';
       default:
         throw Exception('Tipo de scout não suportado: $type');
+    }
+  }
+
+  //endpoint para buscar 
+  Future<List<PlayerSearch>> searchPlayersByName(String name) async {
+    try {
+      final response = await http.get(
+        Uri.parse('https://app-cartola-api.onrender.com/buscar?q=$name'),
+      );
+      
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data.map((json) => PlayerSearch.fromJson(json)).toList();
+      } else {
+        throw Exception('Falha na busca');
+      }
+    } catch (e) {
+      throw Exception('Erro: $e');
     }
   }
   

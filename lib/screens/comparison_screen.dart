@@ -3,6 +3,7 @@ import '../services/player_service.dart';
 import '../models/comparison.dart';
 import '../models/player.dart';
 import '../models/scout.dart';
+import '../models/player_search.dart'; 
 
 class ComparisonScreen extends StatefulWidget {
   const ComparisonScreen({super.key});
@@ -21,7 +22,80 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
   Scout? scout1;
   Scout? scout2;
   bool isLoading = false;
+  
+  // Variáveis para busca
+  bool isSearching = false;
+  List<PlayerSearch> searchResults1 = [];
+  List<PlayerSearch> searchResults2 = [];
+  TextEditingController searchController1 = TextEditingController();
+  TextEditingController searchController2 = TextEditingController();
 
+  // Método para buscar jogadores
+  Future<void> _searchPlayers(String query, int playerNumber) async {
+    if (query.length < 2) {
+      if (playerNumber == 1) {
+        setState(() {
+          searchResults1.clear();
+          isSearching = false;
+        });
+      } else {
+        setState(() {
+          searchResults2.clear();
+          isSearching = false;
+        });
+      }
+      return;
+    }
+
+    setState(() {
+      isSearching = true;
+    });
+
+    try {
+      final results = await service.searchPlayersByName(query);
+      
+      if (playerNumber == 1) {
+        setState(() {
+          searchResults1 = results;
+          isSearching = false;
+        });
+      } else {
+        setState(() {
+          searchResults2 = results;
+          isSearching = false;
+        });
+      }
+    } catch (e) {
+      print('Erro na busca: $e');
+      setState(() {
+        if (playerNumber == 1) {
+          searchResults1.clear();
+        } else {
+          searchResults2.clear();
+        }
+        isSearching = false;
+      });
+    }
+  }
+
+  // Método para selecionar jogador
+  void _selectPlayer(PlayerSearch player, int playerNumber) {
+    if (playerNumber == 1) {
+      idController1.text = player.id.toString();
+      searchController1.text = player.apelido;
+      setState(() {
+        searchResults1.clear();
+      });
+    } else {
+      idController2.text = player.id.toString();
+      searchController2.text = player.apelido;
+      setState(() {
+        searchResults2.clear();
+      });
+    }
+  }
+
+  // Método para comparar jogadores
   Future<void> _comparar() async {
     final id1 = int.tryParse(idController1.text);
     final id2 = int.tryParse(idController2.text);
@@ -70,17 +144,164 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
     });
   }
 
+  // Widget para campo de busca
+  Widget _buildSearchField(
+    String label,
+    TextEditingController idController,
+    TextEditingController searchController,
+    List<PlayerSearch> searchResults,
+    int playerNumber,
+    Color color,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: color,
+            )),
+        const SizedBox(height: 6),
+        
+        // Campo de busca por nome
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: color.withOpacity(0.3)),
+            color: Colors.white,
+          ),
+          child: Column(
+            children: [
+              TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  prefixIcon: Icon(Icons.search, color: color),
+                  hintText: 'Buscar por nome...',
+                  suffixIcon: searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: Icon(Icons.clear, color: color),
+                          onPressed: () {
+                            searchController.clear();
+                            if (playerNumber == 1) {
+                              setState(() => searchResults1.clear());
+                            } else {
+                              setState(() => searchResults2.clear());
+                            }
+                          },
+                        )
+                      : null,
+                ),
+                style: const TextStyle(fontSize: 16),
+                onChanged: (value) {
+                  _searchPlayers(value, playerNumber);
+                },
+              ),
+              
+              // Campo para ID
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: TextField(
+                  controller: idController,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                    prefixIcon: Icon(Icons.numbers, color: color),
+                    hintText: 'ID do jogador (auto-preenchido)',
+                  ),
+                  style: const TextStyle(fontSize: 14),
+                  keyboardType: TextInputType.number,
+                  readOnly: true,
+                ),
+              ),
+            ],
+          ),
+        ),
+        
+        // Resultados da busca
+        if (searchResults.isNotEmpty)
+          Container(
+            margin: const EdgeInsets.only(top: 4),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            constraints: const BoxConstraints(maxHeight: 200),
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: searchResults.length,
+              itemBuilder: (context, index) {
+                final player = searchResults[index];
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: color.withOpacity(0.1),
+                    child: Icon(Icons.person, color: color),
+                  ),
+                  title: Text(player.apelido),
+                  subtitle: Text(
+                    '${player.posicao}',
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                  trailing: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _getPositionColor(player.posicao),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      player.posicao,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  onTap: () => _selectPlayer(player, playerNumber),
+                );
+              },
+            ),
+          ),
+        
+        if (isSearching && searchController.text.isNotEmpty)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                SizedBox(width: 8),
+                Text('Buscando...', style: TextStyle(fontSize: 12)),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Comparação de Jogadores"),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // Card de Inputs
+            // Card de Inputs COM BUSCA
             Card(
               elevation: 3,
               shape: RoundedRectangleBorder(
@@ -105,42 +326,63 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
+                    
+                    // Busca Jogador 1
+                    _buildSearchField(
+                      "Buscar Jogador 1",
+                      idController1,
+                      searchController1,
+                      searchResults1,
+                      1,
+                      Colors.blue,
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // VS
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Expanded(
-                          child: _buildInputField(
-                            "ID Jogador 1",
-                            idController1,
-                            Colors.blue,
-                          ),
+                          child: Divider(color: Colors.grey.shade300),
                         ),
-                        const SizedBox(width: 16),
                         Container(
-                          padding: const EdgeInsets.all(8),
+                          margin: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
                             color: Colors.blue.shade50,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(20),
                           ),
                           child: const Text(
                             "VS",
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFF1A237E),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 16),
                         Expanded(
-                          child: _buildInputField(
-                            "ID Jogador 2",
-                            idController2,
-                            Colors.red,
-                          ),
+                          child: Divider(color: Colors.grey.shade300),
                         ),
                       ],
                     ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Busca Jogador 2
+                    _buildSearchField(
+                      "Buscar Jogador 2",
+                      idController2,
+                      searchController2,
+                      searchResults2,
+                      2,
+                      Colors.red,
+                    ),
+                    
                     const SizedBox(height: 20),
+                    
+                    // Botão Comparar
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
@@ -171,6 +413,17 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
                         ),
                       ),
                     ),
+                    
+                    // Dica
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Digite o nome do jogador para buscar automaticamente',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ],
                 ),
               ),
@@ -179,109 +432,75 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
             const SizedBox(height: 20),
 
             // Resultados
-            Expanded(
-              child: isLoading
-                  ? const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                Color(0xFF1A237E)),
-                          ),
-                          SizedBox(height: 16),
-                          Text(
-                            'Carregando comparação...',
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ],
+            if (isLoading)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 40),
+                child: Column(
+                  children: [
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1A237E)),
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      'Carregando comparação...',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                ),
+              )
+            else if (comp == null || player1Details == null || player2Details == null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 40),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.compare_arrows,
+                      size: 64,
+                      color: Colors.grey.shade400,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Busque jogadores e clique em comparar',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey.shade600,
                       ),
-                    )
-                  : comp == null || player1Details == null || player2Details == null
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.compare_arrows,
-                                size: 64,
-                                color: Colors.grey.shade400,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'Insira os IDs e clique em comparar',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey.shade600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              _buildComparisonCard(
-                                comp!.jogador1.first,
-                                player1Details!,
-                                "Jogador 1",
-                                Colors.blue,
-                              ),
-                              const SizedBox(height: 16),
-                              _buildComparisonCard(
-                                comp!.jogador2.first,
-                                player2Details!,
-                                "Jogador 2",
-                                Colors.red,
-                              ),
-                              const SizedBox(height: 16),
-                              if (scout1 != null && scout2 != null)
-                                _buildScoutComparison(),
-                            ],
-                          ),
-                        ),
-            ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              Column(
+                children: [
+                  _buildComparisonCard(
+                    comp!.jogador1.first,
+                    player1Details!,
+                    "Jogador 1",
+                    Colors.blue,
+                  ),
+                  const SizedBox(height: 16),
+                  _buildComparisonCard(
+                    comp!.jogador2.first,
+                    player2Details!,
+                    "Jogador 2",
+                    Colors.red,
+                  ),
+                  const SizedBox(height: 16),
+                  if (scout1 != null && scout2 != null)
+                    _buildScoutComparison(),
+                  
+                  // Espaço extra no final para rolar melhor
+                  const SizedBox(height: 40),
+                ],
+              ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInputField(String label, TextEditingController controller,
-      Color color) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: color,
-            )),
-        const SizedBox(height: 6),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: color.withOpacity(0.3)),
-            color: Colors.white,
-          ),
-          child: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-              prefixIcon: Icon(Icons.person, color: color),
-            ),
-            style: const TextStyle(fontSize: 16),
-            keyboardType: TextInputType.number,
-          ),
-        ),
-      ],
-    );
-  }
-
-    Widget _buildScoutComparisonChart(String label, int value1, int value2) {
+  Widget _buildScoutComparisonChart(String label, int value1, int value2) {
     final maxValue = [value1, value2].reduce((a, b) => a > b ? a : b);
     final percent1 = maxValue > 0 ? value1 / maxValue : 0.0;
     final percent2 = maxValue > 0 ? value2 / maxValue : 0.0;
@@ -422,15 +641,15 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
                             fontSize: 20, fontWeight: FontWeight.bold)),
                     if (playerDetails.clube != null &&
                         playerDetails.clube!.isNotEmpty)
-                                              Text(
-                          playerDetails.clube!,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade600,
-                          ),
+                      Text(
+                        playerDetails.clube!,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
                         ),
-                    ],
-                  ),
+                      ),
+                  ],
+                ),
               ],
             ),
             Container(
@@ -521,7 +740,6 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
                 ),
               ],
             ),
-
 
             // Eficiência comparativa
             const SizedBox(height: 20),
