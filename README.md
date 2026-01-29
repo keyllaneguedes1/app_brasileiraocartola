@@ -100,7 +100,7 @@ O app permite:
 ## 🛠️ Instalação e Execução
 
 ### Backend (FastAPI)
-```bash
+
 # Clonar repositório
 git clone https://github.com/seu-repo/brasileirao-fantasy.git
 cd backend
@@ -139,11 +139,12 @@ Frontend em Flutter integrado via http ou dio.
 
 Dados baseados no repositório caRtola.
 
-[![Assista ao vídeo](https://img.youtube.com/vi/cRZ5u9zpsWk/0.jpg)](https://www.youtube.com/watch?v=cRZ5u9zpsWk)
-
 
 Frontend (Flutter)
 
 cd frontend
 flutter pub get
 flutter run
+
+
+[![Assista ao vídeo](https://img.youtube.com/vi/cRZ5u9zpsWk/0.jpg)](https://www.youtube.com/watch?v=cRZ5u9zpsWk)
