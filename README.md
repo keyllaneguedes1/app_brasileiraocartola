@@ -139,6 +139,9 @@ Frontend em Flutter integrado via http ou dio.
 
 Dados baseados no repositório caRtola.
 
+[![Assista ao vídeo](https://img.youtube.com/vi/cRZ5u9zpsWk/0.jpg)](https://www.youtube.com/watch?v=cRZ5u9zpsWk)
+
+
 Frontend (Flutter)
 
 cd frontend
