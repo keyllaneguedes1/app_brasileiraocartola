@@ -145,6 +145,6 @@ Frontend (Flutter)
 cd frontend
 flutter pub get
 flutter run
-
+# Assista ao vídeo de demonstração:
 
 [![Assista ao vídeo](https://img.youtube.com/vi/cRZ5u9zpsWk/0.jpg)](https://www.youtube.com/watch?v=cRZ5u9zpsWk)
